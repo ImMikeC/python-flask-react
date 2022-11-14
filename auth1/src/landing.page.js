@@ -2,7 +2,7 @@ import React from 'react'
 import auth from './auth'
 import {useHistory } from 'react-router-dom'
 
-const LandingPage = () => {
+export const LandingPage = props => {
 
   let history = useHistory();
 
@@ -12,12 +12,17 @@ const LandingPage = () => {
 
   return (
     <div>
-      <p>Landing Page</p>
-      <button onClick={handleClick}>
+      <h1>Landing Page</h1>
+      <button onClick={
+        () => {
+          auth.login(()=>{
+            props.history.push('/app')
+          })
+        }
+      }>
         Login
         </button>
     </div>
   )
 }
 
-export default LandingPage

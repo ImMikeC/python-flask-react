@@ -1,7 +1,20 @@
 import React from 'react'
+import auth from './auth'
 
-export const AppLayout = () => {
+
+export const AppLayout = (props) => {
     return(
-        <p>App Layout</p>
+        <>
+        <h1>App Layout</h1>
+        <button 
+            onClick={()=> {
+                auth.logout(()=> {
+                    props.history.push('/')
+                })
+            }}
+            >
+                Logout
+            </button>
+        </>
     )
 }
