@@ -8,10 +8,7 @@ import App from './App'
 const Layout = () => {
     return (
         <BrowserRouter>
-            <App />
-            {/* <Routes>
-                <Route path="/" component={LandingPage} />
-            </Routes> */}
+            <App />            
         </BrowserRouter>
     )
 }
