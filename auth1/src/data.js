@@ -105,8 +105,8 @@ function listPaddockManagersByName() {
 function sortPaddockTypeByTotalArea() {
   // CODE HERE
   function secondFunction() {
-    var joined = paddocks.map(function (e) {
-      return Object.assign({}, e, paddockType.reduce(function (acc, val) {
+    var joined = paddocks.map((e) => {
+      return Object.assign({}, e, paddockType.reduce((acc, val) => {
         if (val.id == e.paddockTypeId) {
           return val
         } else {
@@ -135,38 +135,51 @@ function sortPaddockTypeByTotalArea() {
 // 3 Arreglo con los nombres de los administradores, ordenados decrecientemente por la suma TOTAL de hectáreas que administran.
 function sortFarmManagerByAdminArea() {
   // CODE HERE
-  function thirdFunction() {
-    var joined = paddocks.map(function (e) {
-      return Object.assign({}, e, paddockManagers.reduce(function (acc, val) {
-        if (val.id == e.paddockManagerId) {
-          return val
-        } else {
-          return acc
+
+  let amount = Object.keys(paddocks.reduce
+    (
+      (paddockManagerId, area) => {
+        if (!paddockManagerId[area.paddockManagerId])
+          paddockManagerId[area.paddockManagerId] = { ...area, count: 1 };
+        else {
+          paddockManagerId[area.paddockManagerId].area += area.area;
+          paddockManagerId[area.paddockManagerId].count += 1
         }
-      }, {}))
-    })
-    return (joined.sort((a, b) => {
-      const areaA = a.area
-      const areaB = b.area
-      if (areaA < areaB) {
-        return -1
-      }
-      if (areaA > areaB) {
-        return 1
-      }
-      return 0
-    }
-    ))
-  }
-  const onlyManagersName = thirdFunction()
-  return onlyManagersName.map(
-    (administradores) => administradores.name)
+
+        return paddockManagerId;
+      }, {}
+    )).map(function (i) {
+      let e = paddocks.reduce
+        (
+          (paddockManagerId, area) => {
+            if (!paddockManagerId[area.paddockManagerId])
+              paddockManagerId[area.paddockManagerId] = { ...area, count: 1 };
+            else {
+              paddockManagerId[area.paddockManagerId].area += area.area;
+              paddockManagerId[area.paddockManagerId].count += 1;
+            }
+
+            return paddockManagerId;
+          }, {}
+        )[i];
+
+      return ({
+        "id": e.paddockManagerId,
+        "name": paddockManagers.find(x =>
+          x.id === e.paddockManagerId).name,
+        "surface": e.area / 10000
+      });
+    });
+
+  amount.sort((a, b) => (b.area > a.area) ? 1 : ((a.area > b.area) ? -1 : 0))
+
+  return amount;
 }
-//console.log(sortFarmManagerByAdminArea())
+console.log(sortFarmManagerByAdminArea())
 
 // 4 Objeto en que las claves sean los nombres de los campos y los valores un arreglo con los ruts de sus administradores ordenados alfabéticamente por nombre.
 function farmManagerNames() {
-  //   // CODE HERE
+  // CODE HERE
   const indexFarm = new Array()
 
   paddocks.forEach((key) => {
@@ -217,7 +230,7 @@ function biggestAvocadoFarms() {
       }, {}
     )
 
-  let sum = Object.keys(secondTotal).map(function (i) {
+  let sum = Object.keys(secondTotal).map((i) => {
     const j = secondTotal[i]
 
     return ({
@@ -240,44 +253,45 @@ function biggestAvocadoFarms() {
 // 6 Arreglo con nombres de los administradores de la FORESTAL Y AGRÍCOLA LO ENCINA, ordenados por nombre, que trabajen más de 1000 m2 de Cerezas
 function biggestCherriesManagers() {
   // CODE HERE
-	
-	var paddocksFilter = paddocks.filter(x => x.farmId === idForestal && x.paddockTypeId === idCerezas);	
-	
-	//Hago sumatoria
-	var sumPaddock = paddocksFilter.reduce
-	(
-		(paddockManagerId, area) => 
-		{
-			if (!paddockManagerId[area.paddockManagerId]) 
-				paddockManagerId[area.paddockManagerId] = { ...area, count: 1 };
-			else
-			{
-				paddockManagerId[area.paddockManagerId].area += area.area;
-				paddockManagerId[area.paddockManagerId].count += 1;		
-			}
 
-			return paddockManagerId;
-		},{}	
-	);
-	
-	//Obtengo el arreglo
-	var paddockManagerName = "";
-	var paddocksTotal = Object.keys(sumPaddock).map(function(i){
-		var e = sumPaddock[i];
-		
-		paddockManagerName = paddockManagers.find(x => x.id === e.paddockManagerId).name;
-		
-		return ({ "paddockManagerId" : e.paddockManagerId,"paddockManagerName": paddockManagerName, "farmId": e.farmId, "paddockTypeId" : e.paddockTypeId, "area": e.area });			
-	});	
-	
-	//Filtro los 1000 metros2
-	paddocksTotal = paddocksTotal.filter(x => x.area > 1000);
+  let a = paddocks.paddockManagerId
+  let b = paddocks.area
 
-	//Ordeno
-	paddocksTotal.sort((a,b) => (a.paddockManagerName > b.paddockManagerName) ? 1 : ((b.paddockManagerName > a.paddockManagerName) ? -1 : 0));
-	
-	return paddocksTotal;
-  
+  const amount = paddocks.filter(x =>
+    x.farmId === farms.find(x =>
+      x.name === "FORESTAL Y AGRICOLA LO ENCINA").id
+    &&
+    x.paddockTypeId === paddockType.find(x =>
+      x.name === "CEREZAS").id).reduce
+    (
+      (a, b) => {
+        if (!a[b.a])
+          a[b.a] = { ...b, count: 1 }
+        else {
+          a[b.a].area += b.area
+          a[b.a].count += 1
+        }
+
+        return a
+      }, {}
+    )
+
+  const end = Object.keys(amount).map((i) => {
+    return ({
+      "manager": paddockManagers.find(x =>
+        x.id === amount[i].paddockManagerId).name,
+      "area": amount[i].area
+    })
+  }).filter(x =>
+    x.area > 1000).sort((a, b) =>
+      (a.assign > b.assign) ? 1
+        :
+        ((b.assign > a.assign) ? -1
+          :
+          0))
+
+  return end
+
 }
 //console.log(biggestCherriesManagers())
 
@@ -285,20 +299,74 @@ function biggestCherriesManagers() {
 // 7 Objeto en el cual las claves sean el nombre del administrador y el valor un arreglo con los nombres de los campos que administra, ordenados alfabéticamente
 function farmManagerPaddocks() {
   // CODE HERE
+
+  let group = {}
+  for (let pm in paddockManagers) {
+
+    empty = new Array()
+    paddocks.forEach((paddock) => {
+      if (paddock.paddockManagerId == paddockManagers[pm].id) {
+        empty.push({ plantacion: paddockType[paddock.paddockTypeId - 1].name })
+      }
+    })
+    group[paddockManagers[pm].name] = empty
+
+    empty?.sort((a, b) =>
+    (a.assigned > b.assigned ? 1
+      :
+      -1 || a.assigned > b.assigned ? -1
+        :
+        1))
+  }
+
+  return group
 }
+//console.log(farmManagerPaddocks())
+
 
 // 8 Objeto en que las claves sean el tipo de cultivo concatenado con su año de plantación (la concatenación tiene un separador de guión ‘-’, por ejemplo AVELLANOS-2020) y el valor otro objeto en el cual la clave sea el id del administrador y el valor el nombre del administrador
 function paddocksManagers() {
   // CODE HERE
+
+  let empty = new Array();
+
+  paddocks.forEach((e) => {
+    empty.push({
+      "key": paddockType.find(x =>
+        x.id === e.paddockTypeId).name + "-" + e.harvestYear,
+      "value": {
+        "id": e.paddockManagerId,
+        "manager": paddockManagers.find(x =>
+          x.id === e.paddockManagerId).name
+      }
+    });
+  })
+
+  empty.sort((a, b) => (a.key > b.key) ? 1 : ((b.key > a.key) ? -1 : 0))
+
+  return empty
 }
+//console.log(paddocksManagers())
 
 // 9 Agregar nuevo administrador con datos ficticios a "paddockManagers" y agregar un nuevo cuartel de tipo NOGALES con 900mts2, año 2017 de AGRICOLA SANTA ANA, administrado por este nuevo administrador 
 // Luego devolver el lugar que ocupa este nuevo administrador en el ranking de la pregunta 3.
 // No modificar arreglos originales para no alterar las respuestas anteriores al correr la solución
 function newManagerRanking() {
   // CODE HERE
-}
+  let manager = { id: 7, taxNumber: '157123335', name: 'ERNESTO JARA PARRA' }
 
+  paddockManagers.push(manager)
+
+  paddocks.push({ paddockManagerId: 7, farmId: 1, paddockTypeId: 4, harvestYear: 2017, area: 900 })
+
+  let init = 1
+  sortFarmManagerByAdminArea().forEach(function (key, value) {    
+    if (key.paddockManagerId === manager.id) init = value + 1
+  });
+
+  return init
+}
+console.log(newManagerRanking())
 
   // No modificar, eliminar o alterar cualquier línea de código o comentario de acá para abajo
   // Cualquier cambio hará que su prueba quede invalidada automáticamente
