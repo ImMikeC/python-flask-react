@@ -1,10 +1,10 @@
 class Auth {
     constructor() {
-        this.authenticated = false
+        this.authenticated = true
     }
 
     login(cb) {
-        this.authenticated = true
+        this.authenticated = false
         cb()
     }
 
